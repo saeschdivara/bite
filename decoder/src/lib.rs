@@ -183,22 +183,21 @@ fn unlikely(b: bool) -> bool {
 pub fn encode_hex(mut imm: i64) -> String {
     unsafe {
         let mut buffer = Vec::with_capacity(19);
-        let slice = &mut buffer[..];
         let mut idx = 0;
 
         if imm.is_negative() {
-            *slice.get_unchecked_mut(idx) = b'-';
+            buffer.push(b'-');
             idx += 1;
             imm = imm.wrapping_neg()
         }
 
-        *slice.get_unchecked_mut(idx) = b'0';
+        buffer.push(b'0');
         idx += 1;
-        *slice.get_unchecked_mut(idx) = b'x';
+        buffer.push(b'x');
         idx += 1;
 
         if unlikely(imm == 0) {
-            *slice.get_unchecked_mut(idx) = b'0';
+            buffer.push(b'0');
             idx += 1;
             buffer.set_len(idx);
             return String::from_utf8_unchecked(buffer);
@@ -208,6 +207,10 @@ pub fn encode_hex(mut imm: i64) -> String {
         let len = imm.checked_ilog(16).unwrap_unchecked() as usize + 1;
         let mut jdx = idx + len;
 
+        for _ in 0..len {
+            buffer.push(0);
+        }
+
         while likely(jdx != idx) {
             let digit = imm & 0b1111;
             let chr = HEX_NUGGET[digit as usize];
@@ -215,7 +218,7 @@ pub fn encode_hex(mut imm: i64) -> String {
             imm >>= 4;
             jdx -= 1;
 
-            *slice.get_unchecked_mut(jdx) = chr;
+            *buffer.get_unchecked_mut(jdx) = chr;
         }
 
         buffer.set_len(idx + len);

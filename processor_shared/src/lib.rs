@@ -202,23 +202,23 @@ pub fn encode_hex_bytes_truncated(bytes: &[u8], max_width: usize, is_padded: boo
             let bytes = &bytes[..max_width / 3 - 1];
 
             for byte in bytes {
-                *slice.get_unchecked_mut(idx) = HEX_NUGGET[(byte >> 4) as usize];
-                *slice.get_unchecked_mut(idx + 1) = HEX_NUGGET[(byte & 0b1111) as usize];
+                buffer.push(HEX_NUGGET[(byte >> 4) as usize]);
+                buffer.push(HEX_NUGGET[(byte & 0b1111) as usize]);
                 idx += 2;
 
                 if idx + 1 != len || is_padded {
-                    *slice.get_unchecked_mut(idx) = b' ';
+                    buffer.push(b' ');
                     idx += 1;
                 }
             }
 
-            *slice.get_unchecked_mut(idx) = b'.';
-            *slice.get_unchecked_mut(idx + 1) = b'.';
+            buffer.push(b'.');
+            buffer.push(b'.');
             idx += 2;
 
             if is_padded {
-                *slice.get_unchecked_mut(idx) = b' ';
-                *slice.get_unchecked_mut(idx + 1) = b' ';
+                buffer.push(b' ');
+                buffer.push(b' ');
                 idx += 2;
             }
 
@@ -227,18 +227,18 @@ pub fn encode_hex_bytes_truncated(bytes: &[u8], max_width: usize, is_padded: boo
         }
 
         for byte in bytes {
-            *slice.get_unchecked_mut(idx) = HEX_NUGGET[(byte >> 4) as usize];
-            *slice.get_unchecked_mut(idx + 1) = HEX_NUGGET[(byte & 0b1111) as usize];
+            buffer.push(HEX_NUGGET[(byte >> 4) as usize]);
+            buffer.push(HEX_NUGGET[(byte & 0b1111) as usize]);
             idx += 2;
 
             if idx + 1 != len || is_padded {
-                *slice.get_unchecked_mut(idx) = b' ';
+                buffer.push(b' ');
                 idx += 1;
             }
         }
 
         for _ in 0..pad {
-            *slice.get_unchecked_mut(idx) = b' ';
+            buffer.push(b' ');
             idx += 1;
         }
 
